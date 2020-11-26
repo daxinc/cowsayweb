@@ -11,8 +11,7 @@ const (
                 ||     ||
 `
 	// IndexHTML defines the HTML of the page
-	IndexHTML = `
-<!doctype html>
+	IndexHTML = `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">

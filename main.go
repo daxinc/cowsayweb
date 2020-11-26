@@ -17,6 +17,7 @@ func main() {
 	port := getPort()
 	r := mux.NewRouter()
 
+	r.Use(conentTypeMiddleware)
 	r.HandleFunc("/", indexHandler)
 	r.HandleFunc("/health", healthHandler)
 
@@ -27,14 +28,21 @@ func main() {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	vars:=mux.Vars(r)
-	quote := vars["quote"]
+	quote := r.URL.Query().Get("quote")
 	text := cowsay.Say(quote)
 	fmt.Fprintf(w, cowsay.IndexHTML, html.EscapeString(quote), html.EscapeString(text))
 }
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "OK")
+}
+
+func conentTypeMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-cache")
+		next.ServeHTTP(w, r)
+	})
 }
 
 func notFound(w http.ResponseWriter, r *http.Request) {
